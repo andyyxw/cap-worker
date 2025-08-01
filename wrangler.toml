@@ -8,9 +8,6 @@ compatibility_flags = ["nodejs_compat"]
 binding = "CAP_KV"
 id = "589b591a71944ddca7959f48ce5652af"
 
-# Environment variables (optional)
-[vars]
-TIMEOUT = "900"
 
 # Build configuration
 [build]

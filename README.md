@@ -1,14 +1,15 @@
-# 🛡️ CAP 验证码服务 - Cloudflare Workers
+# 🛡️ CAP 验证码服务
 
-基于 Cloudflare Workers 构建的高性能验证码服务，使用 CAP (Completely Automated Public) 验证码系统。
+基于 Cloudflare Workers 的现代化验证码服务，使用 SHA-256 工作量证明算法，提供无感知的人机验证体验。
 
 ## ✨ 特性
 
-- 🚀 **高性能**: 基于 Cloudflare Workers 构建，全球边缘部署
-- 🔒 **安全可靠**: 使用 @cap.js/server 库提供企业级安全性
-- 💾 **持久存储**: 基于 Cloudflare KV 的状态持久性
-- 🎯 **易于集成**: 简单的 REST API 支持各种编程语言
-- 🌍 **全球部署**: Cloudflare 全球 CDN 网络支持
+- 🚀 **边缘计算**: Cloudflare Workers 全球部署，毫秒级响应
+- 🔒 **安全防护**: SHA-256 PoW 算法，防重放攻击，一次性令牌
+- 💾 **自动清理**: 智能清理过期数据，KV 存储优化
+- 🎯 **开箱即用**: 完整的 REST API，支持所有主流语言
+- 🎨 **美观界面**: 响应式设计，现代化 UI 组件
+- ⚡ **高性能**: 无服务器架构，自动扩缩容
 
 ## 🚀 快速开始
 
@@ -18,142 +19,134 @@
 npm install
 ```
 
-### 2. 配置 Cloudflare KV
+### 2. 配置 KV 存储
 
-在 Cloudflare Dashboard 中创建 KV 命名空间，并更新 `wrangler.toml` 中的 KV 命名空间 ID。
+创建 Cloudflare KV 命名空间：
+
+```bash
+# 创建 KV 命名空间
+wrangler kv:namespace create "CAP_KV"
+
+# 更新 wrangler.toml 中的 KV 命名空间 ID
+```
 
 ### 3. 本地开发
 
 ```bash
+# 启动本地开发服务器
+wrangler dev
+
+# 或使用 npm script
 npm run dev
 ```
 
-### 4. 部署到 Cloudflare Workers
+### 4. 部署上线
 
 ```bash
+# 部署到 Cloudflare Workers
+wrangler deploy
+
+# 或使用 npm script  
 npm run deploy
 ```
 
-## 📖 API 文档
+## 🔗 在线演示
 
-### POST /api/challenge - 创建挑战
+访问部署的服务查看完整功能演示和API文档：
+**https://your-worker.your-subdomain.workers.dev**
 
-创建新的验证码挑战，返回挑战数据和令牌。
+## 📖 API 接口
 
-**请求示例:**
+### 🚀 POST /api/challenge
+创建验证挑战，返回50个SHA-256计算题
+
 ```javascript
-fetch('/api/challenge', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' }
-})
+const response = await fetch('/api/challenge', { method: 'POST' });
+const { token, challenge, expires } = await response.json();
 ```
 
-**响应示例:**
-```json
-{
-  "token": "challenge_token_here",
-  "challenge": "challenge_data_here"
-}
-```
+### 🔍 POST /api/redeem  
+提交计算结果，获取验证令牌
 
-### POST /api/redeem - 验证解决方案
-
-提交验证码解决方案进行验证。
-
-**请求参数:**
-- `token` (string, required) - 挑战令牌
-- `solutions` (number[], required) - 解决方案数组
-
-**请求示例:**
 ```javascript
-fetch('/api/redeem', {
+await fetch('/api/redeem', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    token: 'challenge_token_here',
-    solutions: [1, 2, 3]
-  })
-})
+  body: JSON.stringify({ token, solutions })
+});
 ```
 
-**响应示例:**
-```json
-{
-  "success": true,
-  "token": "validated_token_here"
-}
-```
+### ✅ POST /api/validate
+验证令牌有效性（一次性使用）
 
-### POST /api/validate - 验证令牌
-
-验证以前验证的令牌是否仍然有效。
-
-**请求参数:**
-- `token` (string, required) - 要验证的令牌
-- `keepToken` (boolean, optional) - 是否保留令牌，默认为 false
-
-**请求示例:**
-```javascript
-fetch('/api/validate', {
-  method: 'POST',
+```javascript  
+const result = await fetch('/api/validate', {
+  method: 'POST', 
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    token: 'validated_token_here',
-    keepToken: false
-  })
-})
+  body: JSON.stringify({ token, keepToken: false })
+});
 ```
 
-**响应示例:**
-```json
-{
-  "success": true,
-  "valid": true
+## ⚙️ 技术参数
+
+| 配置项 | 默认值 | 说明 |
+|--------|--------|------|
+| 挑战数量 | 50 | 每次生成的计算题数量 |
+| 难度级别 | 5 | SHA-256前导零个数 |
+| 挑战过期 | 10分钟 | 挑战有效期 |
+| 令牌过期 | 20分钟 | 验证令牌有效期 |
+| 自动清理 | 实时 | 过期数据自动清理 |
+
+## 🛠️ 集成指南
+
+### 前端集成
+```html
+<!-- 引入 CAP Widget -->
+<script src="https://cdn.jsdelivr.net/npm/@cap.js/widget@latest"></script>
+
+<!-- 添加验证组件 -->
+<cap-widget onsolve="handleSolve" data-cap-api-endpoint="/api/"></cap-widget>
+
+<script>
+function handleSolve(event) {
+  const token = event.detail.token;
+  // 使用 token 进行后续验证
+  validateUser(token);
+}
+</script>
+```
+
+### 后端验证
+```javascript
+// 验证用户令牌
+async function validateUser(token) {
+  const response = await fetch('/api/validate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, keepToken: false })
+  });
+  
+  const result = await response.json();
+  if (result.success) {
+    // 用户验证通过，执行业务逻辑
+    return true;
+  }
+  return false;
 }
 ```
 
-## 🔧 配置
+## 🚀 项目亮点
 
-### 环境变量
+- ✅ 无服务器架构，零运维成本
+- ✅ 毫秒级响应，全球边缘计算  
+- ✅ 企业级安全，防机器人攻击
+- ✅ 现代化界面，用户体验优秀
+- ✅ 完整文档，开箱即用
 
-在 `wrangler.toml` 中可以配置以下变量：
+## 📄 开源协议
 
-- `DIFFICULTY`: 挑战难度 (默认: 10000)
-- `TIMEOUT`: 挑战超时时间，毫秒 (默认: 300000)
+MIT License - 自由使用，商业友好
 
-### KV 命名空间
+## 🤝 参与贡献
 
-需要在 Cloudflare 中创建 KV 命名空间用于存储挑战数据：
-
-1. 登录 Cloudflare Dashboard
-2. 转到 Workers & Pages > KV
-3. 创建新的命名空间
-4. 更新 `wrangler.toml` 中的命名空间 ID
-
-## 🛠️ 使用流程
-
-1. **创建挑战**: 调用 `/api/challenge` 获取验证码挑战
-2. **呈现给用户**: 在前端显示挑战内容，供用户完成
-3. **提交解决方案**: 通过 `/api/redeem` 提交用户的答案进行验证
-4. **验证令牌**: 使用返回的令牌通过 `/api/validate` 进行后续验证
-
-## 🚨 错误处理
-
-所有 API 在发生错误时会返回适当的 HTTP 状态代码和错误消息：
-
-- `400 Bad Request`: 请求参数或格式无效
-- `404 Not Found`: 请求的端点不存在
-- `405 Method Not Allowed`: 不支持的请求方法
-- `500 Internal Server Error`: 服务器内部错误
-
-## 📝 许可证
-
-MIT License
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
-## 📞 支持
-
-如有问题，请创建 Issue 或联系维护者。
+欢迎提交 Issue 和 Pull Request，一起完善项目！
