@@ -506,7 +506,7 @@ function handleSolve(event) {
             <h4>⚙️ 配置参数</h4>
             <ul>
                 <li><strong>挑战数量：</strong>50个计算题</li>
-                <li><strong>难度级别：</strong>4（需要4个前导零）</li>
+                <li><strong>难度级别：</strong>5（需要5个前导零）</li>
                 <li><strong>挑战过期：</strong>10分钟</li>
                 <li><strong>令牌过期：</strong>20分钟</li>
                 <li><strong>安全特性：</strong>令牌一次性使用，自动清理过期数据</li>
