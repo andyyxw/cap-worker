@@ -1,0 +1,19 @@
+name = "cap-captcha-service"
+main = "src/index.js"
+compatibility_date = "2024-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+# KV Namespaces for storing challenge data
+[[kv_namespaces]]
+binding = "CAP_KV"
+id = "589b591a71944ddca7959f48ce5652af"
+
+# Environment variables (optional)
+[vars]
+TIMEOUT = "900"
+
+# Build configuration
+[build]
+command = ""
+cwd = ""
+watch_dir = "src"

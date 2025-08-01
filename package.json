@@ -1,0 +1,26 @@
+{
+  "name": "cap-cloudflare-workers",
+  "version": "1.0.0",
+  "description": "CAP验证码服务 - 基于Cloudflare Workers",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "keywords": [
+    "captcha",
+    "cloudflare-workers",
+    "cap",
+    "security",
+    "bot-protection"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@cap.js/server": "^1.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.26.1"
+  }
+}
