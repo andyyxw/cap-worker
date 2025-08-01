@@ -421,7 +421,7 @@ fetch('/api/challenge', {
   ],
   "expires": "2024-01-01T12:00:00.000Z",
   "challengeCount": 50,
-  "challengeDifficulty": 4
+  "challengeDifficulty": 5
 }
             </code>
             
