@@ -6,7 +6,7 @@ compatibility_flags = ["nodejs_compat"]
 # KV Namespaces for storing challenge data
 [[kv_namespaces]]
 binding = "CAP_KV"
-id = "589b591a71944ddca7959f48ce5652af"
+id = "0e3c8682116d48acaecb3276a6aaf4ff"
 
 
 # Build configuration
